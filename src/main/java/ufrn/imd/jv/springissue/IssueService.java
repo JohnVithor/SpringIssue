@@ -11,16 +11,13 @@ import java.util.Optional;
 
 @Service
 public class IssueService {
-    private final UserServiceInterface userService;
-    private final ColumnServiceInterface columnService;
+    private final IssueResilience resilience;
     private final IssueRepository repository;
 
     @Autowired
-    public IssueService(UserServiceInterface userServiceInterface,
-                        ColumnServiceInterface columnServiceInterface,
+    public IssueService(IssueResilience resilience,
                         IssueRepository repository) {
-        this.userService = userServiceInterface;
-        this.columnService = columnServiceInterface;
+        this.resilience = resilience;
         this.repository = repository;
     }
 
@@ -31,16 +28,13 @@ public class IssueService {
         if (issueEntity.getUserId() == null) {
             throw new RuntimeException("Usuário não informado");
         }
-        ResponseEntity<Map<String, String>> responseUser = userService.getUser(issueEntity.getUserId());
-        if (!responseUser.getStatusCode().is2xxSuccessful()) {
+        if (!resilience.isUserValid(issueEntity.getUserId())) {
             throw new RuntimeException("Usuário informado não existe");
         }
-
         if (issueEntity.getColumnId() == null) {
             throw new RuntimeException("Coluna não informada");
         }
-        ResponseEntity<Map<String, String>> responseColumn = columnService.getColumn(issueEntity.getColumnId());
-        if (!responseColumn.getStatusCode().is2xxSuccessful()) {
+        if (!resilience.isColumnValid(issueEntity.getColumnId())) {
             throw new RuntimeException("Coluna informada não existe");
         }
         if (issueEntity.getName() == null) {
