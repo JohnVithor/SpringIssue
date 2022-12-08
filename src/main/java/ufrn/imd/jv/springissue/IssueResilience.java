@@ -24,14 +24,14 @@ public class IssueResilience {
     }
 
     @CircuitBreaker(name = "isUserValid_cb", fallbackMethod = "isUserKnown")
-    @Bulkhead(name = "isUserValid_bh", fallbackMethod = "isUserKnown")
+    @Bulkhead(name = "isUserValid_bh", fallbackMethod = "isUserKnown", type = Bulkhead.Type.THREADPOOL)
     public boolean isUserValid(Long id) {
         ResponseEntity<Map<String, String>> response = userService.getUser(id);
         return response.getStatusCode().is2xxSuccessful();
     }
 
     @CircuitBreaker(name = "isColumnValid_cb", fallbackMethod = "isColumnKnown")
-    @Bulkhead(name = "isColumnValid_bh", fallbackMethod = "isColumnKnown")
+    @Bulkhead(name = "isColumnValid_bh", fallbackMethod = "isColumnKnown", type = Bulkhead.Type.THREADPOOL)
     public boolean isColumnValid(Long id) {
         ResponseEntity<Map<String, String>> response = columnService.getColumn(id);
         return response.getStatusCode().is2xxSuccessful();
@@ -47,7 +47,7 @@ public class IssueResilience {
             System.err.println("Usuário foi encontrado, portanto é válido");
             return true;
         } else {
-            System.err.println("Não foi encontrada issue criada pelo usuário de id="+id);
+            System.err.println("Não foi encontrada issue criada pelo usuário de id=" + id);
             return false;
         }
     }
@@ -62,7 +62,7 @@ public class IssueResilience {
             System.err.println("Column foi encontrado, portanto é válida");
             return true;
         } else {
-            System.err.println("Não foi encontrada issue associado a column de id="+id);
+            System.err.println("Não foi encontrada issue associado a column de id=" + id);
             return false;
         }
     }
