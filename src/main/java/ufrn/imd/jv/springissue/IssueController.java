@@ -32,8 +32,8 @@ public class IssueController {
 
     @GetMapping(path = "column/{id}")
     public ResponseEntity<Page<IssueEntity>> getByColumnId(@PathVariable Long id,
-                                                        @RequestParam(name = "pg", required = false) Optional<Integer> page,
-                                                        @RequestParam(name = "lim", required = false) Optional<Integer> limit) {
+                                                           @RequestParam(name = "pg", required = false) Optional<Integer> page,
+                                                           @RequestParam(name = "lim", required = false) Optional<Integer> limit) {
         return service.getByColumnId(id, page.orElse(0), limit.orElse(10));
     }
 
